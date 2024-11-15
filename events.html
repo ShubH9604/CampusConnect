@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}
+CampusConnect
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mt-3" style="color: #0d6efd;">Discover Events</h2>
+
+<div class="post">
+    {% if user.is_authenticated %}
+        <h4 class="ms-1 pt-4 text-light p-2">
+            Hey <span style="color:#0d6efd;">{{ user.username }}</span>!, get involved in exciting events and create lasting memories!
+        </h4>
+        
+        <!-- Display Add Event button for any logged-in user -->
+        <a class="btn btn-primary mb-2 mt-2 ms-3 p-2 rounded" href="{% url 'create_event' %}">
+            Add Event
+        </a>
+        
+    {% else %}
+        <h4 class="ms-1 pt-4 text-light p-2">
+            Hey there! Want to participate in something?
+        </h4>
+    {% endif %}
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card border-0 shadow-sm rounded">
+                {% if event.photo %}
+                <img src="{{ event.photo.url }}" class="card-img-top rounded-top" alt="Event photo">
+                {% else %}
+                <img src="default_image_url.jpg" class="card-img-top rounded-top" alt="Default image">
+                {% endif %}
+                <div class="card-body" style="background-color: #202020; color: white;">
+                    <h4 class="card-title">{{ event.title }}</h4><br>
+                    <p class="card-text"><strong>Description:</strong> {{ event.description|slice:":80" }}...</p>
+                    <p><strong>Location:</strong> {{ event.location }}</p>
+                    <p><strong>Date & Time:</strong> {{ event.event_datetime|date:"d/m/Y H:i" }}</p>
+                    
+                    <!-- View More Button -->
+                    <a href="{% url 'event_detail' event.id %}" class="btn btn-secondary mt-2 rounded">View More</a>
+
+                    {% if user.is_authenticated %}
+                        {% if event.user != user %}
+                            <!-- Register Button for events not created by the logged-in user -->
+                            <form action="{% url 'register_event' event.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success mt-2 rounded">Register</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <!-- Edit and Delete buttons for the event creator -->
+                    {% if event.user == user %}
+                    <a href="{% url 'update_event' event.id %}" class="btn btn-primary mt-2 rounded">✎</a>
+                    <a href="{% url 'delete_event' event.id %}" class="btn btn-danger mt-2 rounded">🗙</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-white">No events available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container my-3">
+    <h2 class="text-center" style="color: #0d6efd;">My Participations</h2>
+    <hr>
+
+    {% if participations %}
+        <div class="row">
+            {% for participation in participations %}
+                <div class="col-md-4 col-lg-4 mb-4"> <!-- Increased width by using col-md-6 and col-lg-4 -->
+                    <div class="card border-0 shadow-lg hover-effect" style="border: 2px solid white;">
+                        {% if participation.event.photo %}
+                            <img src="{{ participation.event.photo.url }}" class="card-img-top" alt="Event photo">
+                        {% else %}
+                            <img src="default_image_url.jpg" class="card-img-top" alt="Default image">
+                        {% endif %}
+                        <div class="card-body" style="background-color: black; color: white; border-left: 1px solid white; border-right: 1px solid white; border-bottom: 1px solid white;">
+                            <h5 class="card-title">{{ participation.event.title }}</h5>
+                            <p><strong>Date & Time:</strong> {{ participation.event.event_datetime|date:"d/m/Y, H:i" }}</p>
+                            <div class="d-flex justify-content-center">
+                                <a href="{% url 'event_detail' participation.event.id %}" class="btn btn-primary btn-sm">View Event</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center">You have not registered for any events yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
